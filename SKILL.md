@@ -1,7 +1,7 @@
 ---
 name: translated-video-subtitles
 description: Use when a video needs translated, burned-in subtitles.
-version: 1.0.1
+version: 1.1.0
 author: vokasug, Hermes Agent
 license: MIT
 platforms: [macos]
@@ -21,13 +21,20 @@ Owns the end-to-end workflow for "cut or download this clip, transcribe it, tran
    duration, language, and available captions with `yt-dlp --js-runtimes node`. If metadata is
    ambiguous, run a short language-detect fragment. Never guess the language from habit.
 
-2. **Cut or download the clip as MP4 H.264+AAC.** For source intervals, cut during download:
+2. **Cut or download the clip as MP4 H.264+AAC, 1080p by default.** For source intervals,
+   download the best master up to 1080p first, then cut with ffmpeg at CRF 18. Never cut with
+   yt-dlp `--force-keyframes-at-cuts`: it re-encodes the whole section at stock ffmpeg settings,
+   and on top of the ~425 kbps 720p h264 itag (what `-S res:720` picks on YouTube, while the
+   site itself serves 685 kbps VP9 or the 1080p master) that visibly wrecks quality:
 
    ```bash
-   ~/.local/bin/yt-dlp --js-runtimes node --no-playlist \
-     --download-sections '*HH:MM:SS-HH:MM:SS' --force-keyframes-at-cuts \
-     -S 'res:720,vcodec:h264,ext:mp4:m4a' --merge-output-format mp4 \
-     -o '$HOME/result-yt-dlp/$(date +%F)_name.%(ext)s' '<URL>'
+   # 1080p master (YouTube 137+140). Check -F first: if 1080p is missing, STOP and ask
+   # the user, listing the available resolutions above and below.
+   ~/.local/bin/yt-dlp --js-runtimes node --cookies-from-browser chrome --no-playlist \
+     -f '137+140' --merge-output-format mp4 -o '/tmp/full.%(ext)s' '<URL>'
+   # precise cut, one high-quality encode
+   ffmpeg -y -v error -ss HH:MM:SS -t <seconds> -i /tmp/full.mp4 \
+     -c:v libx264 -crf 18 -preset medium -c:a copy /tmp/clip.mp4
    ```
 
    Verify immediately with `ffprobe`: expected duration, nonzero size, H.264 video, AAC audio.
@@ -93,7 +100,9 @@ Owns the end-to-end workflow for "cut or download this clip, transcribe it, tran
    For 720p full-frame mobile output, start with 51 pt bold text, 28 px bottom margin, and an
    8 px black outline. Scale these values with frame height. The fallback renders one transparent
    full-frame PNG per cue, draws a multi-offset black underlay with white fill on top, applies one
-   timed ffmpeg overlay per cue, and copies audio unchanged.
+   timed ffmpeg overlay per cue, and copies audio unchanged. Burning is one full re-encode of the
+   video (unavoidable for hard subs): the script defaults to CRF 20 preset medium (fine); for
+   1080p masters use `--crf 18 --preset slow` — a 5-minute 1080p clip burns in about a minute.
 
 7. **Verify before delivery:**
    - `ffprobe` final duration, codecs, dimensions, SAR/DAR, and size.
