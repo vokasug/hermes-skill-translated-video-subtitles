@@ -52,13 +52,13 @@ git clone https://github.com/vokasug/hermes-skill-yt-dlp ~/.hermes/skills/media/
 
 Затем выполните установку yt-dlp по README этого репозитория. Критичный флаг для YouTube: `--js-runtimes node`.
 
-### 4. Скилл mlx-whisper и модель
+### 4. Скилл mlx-whisper и модели
 
 ```bash
 git clone https://github.com/vokasug/hermes-skill-mlx-whisper ~/.hermes/skills/media/mlx-whisper
 ```
 
-Затем установите `mlx-whisper` и модель `whisper-podlodka-turbo-MLX-q8` по README этого репозитория.
+Затем установите `mlx-whisper` и модели по README этого репозитория: `whisper-podlodka-turbo-MLX-q8` (русский) и `whisper-large-v3-turbo-8bit` (все остальные языки — без неё не-русские клипы распознаются ru-специализированной моделью с потерей качества).
 
 ### 5. Этот скилл
 

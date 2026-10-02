@@ -1,7 +1,7 @@
 ---
 name: translated-video-subtitles
 description: use when a video needs translated, burned-in subtitles
-version: 1.1.1
+version: 1.1.2
 author: vokasug, Hermes Agent
 license: MIT
 platforms: [macos]
@@ -39,11 +39,15 @@ Owns the end-to-end workflow for "cut or download this clip, transcribe it, tran
 
    Verify immediately with `ffprobe`: expected duration, nonzero size, H.264 video, AAC audio.
 
-3. **Transcribe with word timestamps:**
+3. **Transcribe with word timestamps.** Pick the model by detected language: ru →
+   `whisper-podlodka-turbo-MLX-q8`, any other language → `whisper-large-v3-turbo-8bit`
+   (podlodka is ru-specialized and measurably worse on other languages):
 
    ```bash
+   # MODEL=~/.local/share/models/whisper-podlodka-turbo-MLX-q8     # if language is ru
+   # MODEL=~/.local/share/models/whisper-large-v3-turbo-8bit       # any other language
    ~/.local/bin/mlx_whisper \
-     --model ~/.local/share/models/whisper-podlodka-turbo-MLX-q8 \
+     --model "$MODEL" \
      --language <detected> --condition-on-previous-text False \
      --word-timestamps True --output-format all \
      --output-dir <stt-out-dir> <clip.mp4>
