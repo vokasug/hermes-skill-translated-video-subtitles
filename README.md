@@ -46,8 +46,8 @@ xcode-select --install
 ### 3. Скилл yt-dlp и сам yt-dlp
 
 ```bash
-mkdir -p ~/.hermes/skills/media
-git clone https://github.com/vokasug/hermes-skill-yt-dlp ~/.hermes/skills/media/yt-dlp
+mkdir -p $HERMES_HOME/skills/media
+git clone https://github.com/vokasug/hermes-skill-yt-dlp $HERMES_HOME/skills/media/yt-dlp
 ```
 
 Затем выполните установку yt-dlp по README этого репозитория. Критичный флаг для YouTube: `--js-runtimes node`.
@@ -55,7 +55,7 @@ git clone https://github.com/vokasug/hermes-skill-yt-dlp ~/.hermes/skills/media/
 ### 4. Скилл mlx-whisper и модели
 
 ```bash
-git clone https://github.com/vokasug/hermes-skill-mlx-whisper ~/.hermes/skills/media/mlx-whisper
+git clone https://github.com/vokasug/hermes-skill-mlx-whisper $HERMES_HOME/skills/media/mlx-whisper
 ```
 
 Затем установите `mlx-whisper` и модели по README этого репозитория: `whisper-podlodka-turbo-MLX-q8` (русский) и `whisper-large-v3-turbo-8bit` (все остальные языки — без неё не-русские клипы распознаются ru-специализированной моделью с потерей качества).
@@ -64,7 +64,7 @@ git clone https://github.com/vokasug/hermes-skill-mlx-whisper ~/.hermes/skills/m
 
 ```bash
 git clone https://github.com/vokasug/hermes-skill-translated-video-subtitles \
-  ~/.hermes/skills/media/translated-video-subtitles
+  $HERMES_HOME/skills/media/translated-video-subtitles
 ```
 
 Hermes подхватывает скилл автоматически. Проверка: `hermes skills list`.
@@ -78,7 +78,7 @@ Hermes подхватывает скилл автоматически. Пров�
 Если нужно запустить только механическую часть вручную:
 
 ```bash
-SKILL_DIR=~/.hermes/skills/media/translated-video-subtitles
+SKILL_DIR=$HERMES_HOME/skills/media/translated-video-subtitles
 
 # SRT -> cues.json; отклоняет cue < 2 с и длинные тире
 python3 "$SKILL_DIR/scripts/srt_to_cues.py" translated.srt cues.json --min-duration 2.0

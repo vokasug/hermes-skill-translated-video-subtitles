@@ -1,7 +1,7 @@
 ---
 name: translated-video-subtitles
 description: use when a video needs translated, burned-in subtitles
-version: 1.1.2
+version: 1.1.3
 author: vokasug, Hermes Agent
 license: MIT
 platforms: [macos]
