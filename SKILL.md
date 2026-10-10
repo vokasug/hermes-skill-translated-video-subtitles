@@ -39,19 +39,12 @@ Owns the end-to-end workflow for "cut or download this clip, transcribe it, tran
 
    Verify immediately with `ffprobe`: expected duration, nonzero size, H.264 video, AAC audio.
 
-3. **Transcribe with word timestamps.** Pick the model by detected language: ru →
-   `whisper-podlodka-turbo-MLX-q8`, any other language → `whisper-large-v3-turbo-8bit`
-   (podlodka is ru-specialized and measurably worse on other languages):
-
-   ```bash
-   # MODEL=~/.local/share/models/whisper-podlodka-turbo-MLX-q8     # if language is ru
-   # MODEL=~/.local/share/models/whisper-large-v3-turbo-8bit       # any other language
-   ~/.local/bin/mlx_whisper \
-     --model "$MODEL" \
-     --language <detected> --condition-on-previous-text False \
-     --word-timestamps True --output-format all \
-     --output-dir <stt-out-dir> <clip.mp4>
-   ```
+3. **Transcribe with word timestamps.** Load the mlx-whisper skill (`skill_view
+   media/mlx-whisper`) and run the launch command its doc specifies for
+   translated-video-subtitles (single `--for` flag, section "Запуск под
+   скиллы-потребители"; model auto-selected by language) with `--language <detected>`.
+   Output artifact (one JSON with segment timings and word timestamps) and its location
+   are defined by that skill's spec — this skill does not re-specify flags or paths.
 
    Source-language platform captions may be downloaded as a terminology cross-check, but local
    STT remains the timing source.
