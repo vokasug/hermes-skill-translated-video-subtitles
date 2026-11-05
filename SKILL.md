@@ -1,7 +1,7 @@
 ---
 name: translated-video-subtitles
 description: use when a video needs translated, burned-in subtitles
-version: 1.1.3
+version: 1.1.4
 author: vokasug, Hermes Agent
 license: MIT
 platforms: [macos]
@@ -48,6 +48,14 @@ Owns the end-to-end workflow for "cut or download this clip, transcribe it, tran
 
    Source-language platform captions may be downloaded as a terminology cross-check, but local
    STT remains the timing source.
+
+   **STT confidence gate:** before translating, inspect every segment's `avg_logprob` and word
+   probabilities. Flag a segment when `avg_logprob < -1.0`, the median word probability is
+   `< 0.35`, or word timings are missing. Do not translate a flagged segment directly: extract
+   it with 1–2 seconds of padding and transcribe the isolated fragment again. Omit the cue if
+   the second transcription contradicts the first or remains below either numeric threshold.
+   A missing platform caption is only a supporting signal, not proof by itself. Never treat a
+   low `no_speech_prob` as proof of speech on music, noise, or credits.
 
 4. **Build translated cues at word boundaries.** Split by speaker or phrase; no overlaps. No cue
    may be shorter than 2.0 s. First merge short reactions/questions with an adjacent cue; if that
@@ -110,6 +118,8 @@ Owns the end-to-end workflow for "cut or download this clip, transcribe it, tran
      separate ffmpeg invocation per frame.
    - Check SRT/JSON for the exact required phrase, monotonic cue timing, no long dashes, and
      minimum cue duration.
+   - Confirm every segment flagged by the STT confidence gate was checked in isolation and
+     every unconfirmed segment is absent from the final SRT.
    - For Telegram, keep MP4 H.264+AAC below 50 MB and send with `MEDIA:/absolute/path.mp4`.
 
 ## Pitfalls
